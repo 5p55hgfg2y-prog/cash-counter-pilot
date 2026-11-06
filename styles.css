@@ -5,3 +5,6 @@
 .group-total{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 12px;margin-top:10px;background:#eef6f2;border-radius:11px;color:#174e47;font-weight:700}
 .group-total strong{font-size:19px;font-variant-numeric:tabular-nums;white-space:nowrap}
 @media(max-width:580px){.settings{max-width:none}.group-total strong{font-size:17px}}
+
+/* v7: device-visible running app version, including when offline. */
+.app-meta{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}.app-version{color:#c1d9d6;font-size:12px;font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap}@media(max-width:580px){.app-meta{gap:6px}.app-version{font-size:11px}}

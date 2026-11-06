@@ -1,4 +1,4 @@
-# Kasseoptælling — Security-hardened pilot v6
+# Kasseoptælling — Security-hardened pilot v7
 
 Static, offline-capable Danish cash-counting PWA. No authentication, analytics, trackers, external JS/CSS, third-party libraries or remote API calls.
 
@@ -10,7 +10,7 @@ Static, offline-capable Danish cash-counting PWA. No authentication, analytics, 
 - Choose date. Data remains local to the individual browser/web-app installation
 - No export, no saved day-close screen, no store/cash-register input
 
-## Security changes in v6
+## Security changes introduced in v6
 - HTML Content Security Policy (CSP) via a meta tag: same-origin scripts, styles, workers, and connections only; blocks object embeds and form submissions
 - DOM nodes for denomination rows constructed using createElement and textContent (no innerHTML)
 - Service worker uses network-first for freshness with offline cached fallback and only removes its own old cache versions
@@ -33,3 +33,10 @@ Static, offline-capable Danish cash-counting PWA. No authentication, analytics, 
 
 ## Developer smoke test
 From the folder run `python3 -m http.server 8000` and open `http://localhost:8000` on the same computer. iOS devices need HTTPS hosting for service workers.
+
+## Version identification (v7)
+- The top right shows `v7.0.0`, populated from the running JavaScript. It remains visible offline.
+- `Offline-klar` means offline support is initialized, **not** that the latest version is installed.
+- A user can report this version to support. Compare it with the approved release in GitHub.
+- The version must be updated in `app.js`, the initial `index.html` fallback and the service worker cache name for every release.
+- This pilot does **not** query the latest server version, and it does not centrally report device versions.
