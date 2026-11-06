@@ -1,6 +1,7 @@
 # Kasseoptælling DKK – offline PWA
 
-Proof-of-concept for a Danish retail POS iPad. No accounts, advertising, analytics, network calls, external libraries, location or camera permission.
+Proof-of-concept for retail POS iPad. 
+No accounts, advertising, analytics, network calls, external libraries, location or camera permission.
 
 ## Features
 - Danish valid banknotes: 500, 200, 100, 50 DKK. Coins: 20, 10, 5, 2, 1 DKK, 50 øre.
