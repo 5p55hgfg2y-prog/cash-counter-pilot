@@ -1,4 +1,4 @@
-# Kasseoptælling — Security-hardened pilot v7
+# Kasseoptælling — Security-hardened pilot v8
 
 Static, offline-capable Danish cash-counting PWA. No authentication, analytics, trackers, external JS/CSS, third-party libraries or remote API calls.
 
@@ -7,7 +7,7 @@ Static, offline-capable Danish cash-counting PWA. No authentication, analytics, 
 - Separate totals for notes and coins; combined total
 - Register cash movements (in/out) with reason, optional note, and time
 - Reset **all current-day data** (counts and movements) after confirmation
-- Choose date. Data remains local to the individual browser/web-app installation
+- Date is automatic (device local date) and not editable; data remains local to the individual browser/web-app installation
 - No export, no saved day-close screen, no store/cash-register input
 
 ## Security changes introduced in v6
@@ -34,9 +34,14 @@ Static, offline-capable Danish cash-counting PWA. No authentication, analytics, 
 ## Developer smoke test
 From the folder run `python3 -m http.server 8000` and open `http://localhost:8000` on the same computer. iOS devices need HTTPS hosting for service workers.
 
-## Version identification (v7)
-- The top right shows `v7.0.0`, populated from the running JavaScript. It remains visible offline.
+## Version identification (v8)
+- The top right shows `v8.0.0`, populated from the running JavaScript. It remains visible offline.
 - `Offline-klar` means offline support is initialized, **not** that the latest version is installed.
 - A user can report this version to support. Compare it with the approved release in GitHub.
 - The version must be updated in `app.js`, the initial `index.html` fallback and the service worker cache name for every release.
 - This pilot does **not** query the latest server version, and it does not centrally report device versions.
+
+## v8 layout
+- The date input is removed; data is still keyed to device-local calendar day. Foregrounding the app refreshes the displayed day.
+- On narrow iPhone screens, switch between Sedler and Mønter; on wider iPads both are displayed in columns.
+- Both section subtotals appear on the selector and under each section; overall total remains above.
