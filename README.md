@@ -1,7 +1,6 @@
 # Kasseoptælling DKK – offline PWA
 
-Proof-of-concept for retail POS iPad. 
-No accounts, advertising, analytics, network calls, external libraries, location or camera permission.
+Proof-of-concept for a Danish retail POS iPad. No accounts, advertising, analytics, network calls, external libraries, location or camera permission.
 
 ## Features
 - Danish valid banknotes: 500, 200, 100, 50 DKK. Coins: 20, 10, 5, 2, 1 DKK, 50 øre.
@@ -28,3 +27,12 @@ Run `python3 -m http.server 8000` in this folder, then open `http://localhost:80
 
 ## License
 Internal proof-of-concept; adjust and review before deployment.
+
+
+## Version 2
+- Export/backup buttons removed
+- Store/cash register field hidden (legacy stored data remains scoped to its previous internal key)
+- Separate notes and coins subtotals
+- Offline cache version incremented to dk-kasse-v2
+
+Note: Data is still stored only locally and may be lost if site data is cleared. Do not use this pilot as the sole cash audit record.
