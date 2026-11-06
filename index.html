@@ -1,10 +1,28 @@
 <!doctype html>
 <html lang="da"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#102b34"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Kasseoptælling"><meta name="description" content="Offline kasseoptælling i danske kroner"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-180.png"><link rel="stylesheet" href="./styles.css"><title>Kasseoptælling · DKK</title></head>
-<body><header><div class="brand"><span class="brand-icon">kr</span><div><strong>Kasseoptælling</strong></div></div><div class="app-meta"><span class="app-version" id="appVersion" aria-label="Appversion">v7.0.0</span><span class="status" id="status">Offline-klar</span></div></header>
-<main><section class="intro"><h1>Kontanter i kassen</h1><p>Optæl sedler og mønter og registrér kontantbevægelser.</p></section>
-<section class="settings card"><div class="field"><label for="date">Dato</label><input type="date" id="date"></div></section>
+<body><header><div class="brand"><span class="brand-icon">kr</span><div><strong>Kasseoptælling</strong></div></div><div class="app-meta"><span class="app-version" id="appVersion" aria-label="Appversion">v8.0.0</span><span class="status" id="status">Offline-klar</span></div></header>
+<main><section class="intro"><h1>Kontanter i kassen</h1></section>
 <nav class="tabs" aria-label="Funktioner"><button type="button" class="tab selected" data-tab="count">Optælling</button><button type="button" class="tab" data-tab="moves">Ind / ud</button></nav>
-<section id="count" class="panel"><div class="hero"><span>Optalt kontantbeholdning</span><strong id="countTotal">0,00 kr.</strong><small>Opdateres automatisk · DKK</small></div><div class="card"><div class="section-head"><h2>Sedler</h2><span>Antal × værdi</span></div><div id="notes"></div><div class="group-total"><span>Sedler i alt</span><strong id="notesTotal">0,00 kr.</strong></div><div class="section-head separator"><h2>Mønter</h2><span>Antal × værdi</span></div><div id="coins"></div><div class="group-total"><span>Mønter i alt</span><strong id="coinsTotal">0,00 kr.</strong></div></div><button type="button" class="muted full" id="resetCount">Nulstil alt</button></section>
+<section id="count" class="panel">
+  <div class="hero"><span>Optalt kontantbeholdning</span><strong id="countTotal">0,00 kr.</strong></div>
+  <div class="cash-switch" role="group" aria-label="Vælg kontanttype">
+    <button type="button" class="cash-switch-btn selected" data-cash="notes" aria-pressed="true">Sedler <span id="notesSwitchTotal">0,00 kr.</span></button>
+    <button type="button" class="cash-switch-btn" data-cash="coins" aria-pressed="false">Mønter <span id="coinsSwitchTotal">0,00 kr.</span></button>
+  </div>
+  <div class="cash-grid">
+    <section class="card cash-group" id="notesGroup" aria-label="Sedler">
+      <div class="section-head"><h2>Sedler</h2><span>Antal × værdi</span></div>
+      <div id="notes"></div>
+      <div class="group-total"><span>Sedler i alt</span><strong id="notesTotal">0,00 kr.</strong></div>
+    </section>
+    <section class="card cash-group mobile-collapsed" id="coinsGroup" aria-label="Mønter">
+      <div class="section-head"><h2>Mønter</h2><span>Antal × værdi</span></div>
+      <div id="coins"></div>
+      <div class="group-total"><span>Mønter i alt</span><strong id="coinsTotal">0,00 kr.</strong></div>
+    </section>
+  </div>
+  <button type="button" class="muted full" id="resetCount">Nulstil alt</button>
+</section>
 <section id="moves" class="panel hidden"><div class="card"><h2>Registrér kontantbevægelse</h2><div class="field"><label for="movementType">Type</label><select id="movementType"><option value="in">Indbetaling (+)</option><option value="out">Udbetaling (−)</option></select></div><div class="field"><label for="movementAmount">Beløb (DKK)</label><input id="movementAmount" type="text" inputmode="decimal" placeholder="F.eks. 125,50"></div><div class="field"><label for="movementReason">Årsag</label><select id="movementReason"><option value="Kontantsalg">Kontantsalg</option><option value="Vekselpenge">Vekselpenge</option><option value="Indsætning">Indsætning</option><option value="Udtagning til bank">Udtagning til bank</option><option value="Kontantrefusion">Kontantrefusion</option><option value="Andet">Andet</option></select></div><div class="field"><label for="movementNote">Bemærkning (valgfri)</label><input id="movementNote" maxlength="160" placeholder="Kort note"></div><button type="button" class="primary full" id="addMovement">Registrér bevægelse</button></div><div class="card"><div class="section-head"><h2>Dagens bevægelser</h2><strong id="movementNet">0,00 kr.</strong></div><div id="movementList" class="log"></div></div></section>
 
 </main><div role="status" id="toast" aria-live="polite"></div><script defer src="./app.js"></script></body></html>

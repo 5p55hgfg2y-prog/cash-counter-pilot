@@ -1,5 +1,5 @@
 'use strict';
-const APP_VERSION = '7.0.0'; // Version of the running JavaScript, not necessarily the latest online.
+const APP_VERSION = '8.0.0'; // Version of the running JavaScript, not necessarily the latest online.
 // Cash values are integer øre. No external requests, tracking, or third-party scripts.
 const DENOMS = [
   {ore:50000,name:'500 kr.',kind:'note'},
@@ -97,6 +97,8 @@ function renderTotals() {
   el('notesTotal').textContent=money(DENOMS.filter(x=>x.kind==='note').reduce((s,x)=>s+x.ore*(d.counts[x.ore]||0),0));
   el('coinsTotal').textContent=money(DENOMS.filter(x=>x.kind==='coin').reduce((s,x)=>s+x.ore*(d.counts[x.ore]||0),0));
   el('movementNet').textContent=money(movementSum(d));
+  el('notesSwitchTotal').textContent=el('notesTotal').textContent;
+  el('coinsSwitchTotal').textContent=el('coinsTotal').textContent;
 }
 function render() {
   const d=current();
@@ -125,15 +127,24 @@ function render() {
     entry.append(header,meta,remove);list.append(entry);
   }
 }
+function refreshDay() { const now=today(); if(date!==now) {date=now;render();notify('Ny dag – dagens optælling vises.');} }
 function init() {
   el('appVersion').textContent = 'v' + APP_VERSION;
-  el('date').value=date;
   elements();render();
+  function chooseCash(kind){
+    document.querySelectorAll('.cash-switch-btn').forEach(button=>{
+      const active=button.dataset.cash===kind;
+      button.classList.toggle('selected',active);
+      button.setAttribute('aria-pressed',String(active));
+    });
+    el('notesGroup').classList.toggle('mobile-collapsed',kind!=='notes');
+    el('coinsGroup').classList.toggle('mobile-collapsed',kind!=='coins');
+  }
+  document.querySelectorAll('.cash-switch-btn').forEach(button=>button.addEventListener('click',()=>chooseCash(button.dataset.cash)));
   document.querySelectorAll('.tab').forEach(button=>button.addEventListener('click',()=>{
     document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('selected',b===button));
     document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('hidden',p.id!==button.dataset.tab));
   }));
-  el('date').addEventListener('change',event=>{date=event.target.value||today();render();});
   el('resetCount').addEventListener('click',()=>{
     if(confirm('Vil du nulstille alt?')) {
       data.days[dayKey()]=blank();save();render();notify('Alt for denne dato er nulstillet.');
@@ -156,11 +167,11 @@ function init() {
     navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(reg=>{
       navigator.serviceWorker.ready.then(()=>{el('status').textContent='Offline-klar';}).catch(()=>{});
       // On returning to an online app, look for a new SW without unnecessary polling.
-      document.addEventListener('visibilitychange',()=>{if(!document.hidden&&navigator.onLine)reg.update().catch(()=>{});});
+      document.addEventListener('visibilitychange',()=>{if(!document.hidden){refreshDay();if(navigator.onLine)reg.update().catch(()=>{});}});
       navigator.serviceWorker.addEventListener('controllerchange',()=>{
         // Once new SW controls the page, reload to ensure the full same-version UI.
-        if(!sessionStorage.getItem('dk-reload-v7')) {
-          sessionStorage.setItem('dk-reload-v7','1');window.location.reload();
+        if(!sessionStorage.getItem('dk-reload-v8')) {
+          sessionStorage.setItem('dk-reload-v8','1');window.location.reload();
         }
       });
     }).catch(()=>{el('status').textContent='Online';});

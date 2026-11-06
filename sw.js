@@ -1,5 +1,5 @@
 'use strict';
-const CACHE='dk-kasse-v7';
+const CACHE='dk-kasse-v8';
 const ASSETS=['./','./index.html','./styles.css','./app.js','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-180.png'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)));
