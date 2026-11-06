@@ -1,4 +1,5 @@
 'use strict';
+const APP_VERSION = '7.0.0'; // Version of the running JavaScript, not necessarily the latest online.
 // Cash values are integer øre. No external requests, tracking, or third-party scripts.
 const DENOMS = [
   {ore:50000,name:'500 kr.',kind:'note'},
@@ -125,6 +126,7 @@ function render() {
   }
 }
 function init() {
+  el('appVersion').textContent = 'v' + APP_VERSION;
   el('date').value=date;
   elements();render();
   document.querySelectorAll('.tab').forEach(button=>button.addEventListener('click',()=>{
@@ -157,8 +159,8 @@ function init() {
       document.addEventListener('visibilitychange',()=>{if(!document.hidden&&navigator.onLine)reg.update().catch(()=>{});});
       navigator.serviceWorker.addEventListener('controllerchange',()=>{
         // Once new SW controls the page, reload to ensure the full same-version UI.
-        if(!sessionStorage.getItem('dk-reload-v6')) {
-          sessionStorage.setItem('dk-reload-v6','1');window.location.reload();
+        if(!sessionStorage.getItem('dk-reload-v7')) {
+          sessionStorage.setItem('dk-reload-v7','1');window.location.reload();
         }
       });
     }).catch(()=>{el('status').textContent='Online';});
