@@ -1,45 +1,35 @@
-# Kasseoptælling DKK – offline PWA
+# Kasseoptælling — Security-hardened pilot v6
 
-Proof-of-concept for a Danish retail POS iPad. No accounts, advertising, analytics, network calls, external libraries, location or camera permission.
+Static, offline-capable Danish cash-counting PWA. No authentication, analytics, trackers, external JS/CSS, third-party libraries or remote API calls.
 
 ## Features
-- Danish valid banknotes: 500, 200, 100, 50 DKK. Coins: 20, 10, 5, 2, 1 DKK, 50 øre.
-- Count notes/coins, register cash in/out with timestamps and reasons, enter opening float, calculate expected balance and cash difference, save a daily closing snapshot.
-- Export UTF-8 BOM semicolon CSV (Danish/Excel-friendly) and JSON backup for the currently selected store/date.
-- Local-only persistent browser storage, cached static assets for offline use.
+- Danish notes (500, 200, 100, 50 kr) and coins (20, 10, 5, 2, 1 kr and 50 øre)
+- Separate totals for notes and coins; combined total
+- Register cash movements (in/out) with reason, optional note, and time
+- Reset **all current-day data** (counts and movements) after confirmation
+- Choose date. Data remains local to the individual browser/web-app installation
+- No export, no saved day-close screen, no store/cash-register input
 
-## Pilot deployment
-1. Publish the entire directory (including icons, manifest and service worker) at a stable HTTPS URL, e.g. `https://<internal-host>/kasse/` (HTTPS is required for PWA service workers except `localhost`). Do not open `index.html` via file://.
-2. Open URL on pilot iPad using Safari, choose Share > Add to Home Screen. Launch from the icon, then disconnect Wi-Fi and test counting, entries, close and export.
-3. For controlled distribution, pilot an Intune web clip (with full-screen settings as appropriate to enrollment type and iPadOS version). Validate whether installed web clip and offline storage persist as expected on the specific userless/supervised devices.
-4. On every iPad, test restart, app/cache clearing, OS update, loss of connectivity and CSV export workflow before production.
+## Security changes in v6
+- HTML Content Security Policy (CSP) via a meta tag: same-origin scripts, styles, workers, and connections only; blocks object embeds and form submissions
+- DOM nodes for denomination rows constructed using createElement and textContent (no innerHTML)
+- Service worker uses network-first for freshness with offline cached fallback and only removes its own old cache versions
+- Checks for a new service worker when app returns to foreground online
+- Same localStorage key and date/store keying as v1-v5 to avoid unexpected data migration or deletion
 
-## Data and limitations
-- **Not a cash register/accounting system or an authoritative audit trail.** Data is only in browser localStorage on the local device, is editable, can be cleared by browser/site data deletion and is not automatically backed up or synchronized between iPads.
-- A saved closing is a historical local snapshot, not a locked, tamper-proof accounting record. Deleting a movement does not alter previous snapshots.
-- Enter cash sales as positive movements, cash withdrawals/refunds as negative movements. Physical denomination counts represent actual cash in drawer; they are **not** adjusted automatically when movements are recorded.
-- `0` opening amount is the default until entered; distinguish from actually verified zero.
-- Keep the kiosk OS/browser profile and Intune app/data lifecycle in mind. If production use requires immutable records, multi-device sync, user roles or POS integration, add server-side storage/authentication and proper retention policy.
-- Note: DKK 1000 banknotes are no longer legal tender, nor are older banknote series. Reference: https://www.nationalbanken.dk/en/what-we-do/notes-and-coins/danish-banknotes-today
+## Publish to GitHub Pages
+1. Unzip and upload all files directly to repository root (not the enclosing folder).
+2. Commit using a branch + Pull Request if main branch rulesets require it.
+3. Verify GitHub Actions pages deployment, then open HTTPS Pages URL.
+4. With internet, perform tests and verify totals; reload once after update; switch to airplane mode to confirm offline behavior.
+5. Test in Safari and the actual Intune Web Clip independently; storage and multitasking can differ.
 
-## Local smoke test
-Run `python3 -m http.server 8000` in this folder, then open `http://localhost:8000` on the same computer. For an iPad use a real HTTPS host.
+## Critical limitations
+- **Development / test only.** Not a POS or accounting system. No tamper-evident audit trail, backend, user roles, central backup or synchronization.
+- localStorage contains unencrypted-at-application-layer data and can be cleared by device/browser policy. No sensitive data or real register records in this public pilot.
+- Any author able to modify the published repository can replace served code. Protect GitHub account, main branch and repository write access.
+- CSP in a meta tag cannot set `frame-ancestors`. On a separately controlled production host, also send a CSP response header and appropriate security headers.
+- Service worker updates and browser cache require device validation; do not assume cached data will always be retained by iOS.
 
-## License
-Internal proof-of-concept; adjust and review before deployment.
-
-
-## Version 2
-- Export/backup buttons removed
-- Store/cash register field hidden (legacy stored data remains scoped to its previous internal key)
-- Separate notes and coins subtotals
-- Offline cache version incremented to dk-kasse-v3
-
-Note: Data is still stored only locally and may be lost if site data is cleared. Do not use this pilot as the sole cash audit record.
-
-
-## Version 4
-- Kortare och tydligare text vid nollställning av valörräkningen.
-- Borttagen sidfot med integritetsinformation.
-- Mindre utrymme nedtill och uppdaterad offline-cache.
-- Registrerade kontantbevägelser sparas fortfarande lokalt.
+## Developer smoke test
+From the folder run `python3 -m http.server 8000` and open `http://localhost:8000` on the same computer. iOS devices need HTTPS hosting for service workers.
