@@ -33,6 +33,13 @@ Internal proof-of-concept; adjust and review before deployment.
 - Export/backup buttons removed
 - Store/cash register field hidden (legacy stored data remains scoped to its previous internal key)
 - Separate notes and coins subtotals
-- Offline cache version incremented to dk-kasse-v2
+- Offline cache version incremented to dk-kasse-v3
 
 Note: Data is still stored only locally and may be lost if site data is cleared. Do not use this pilot as the sole cash audit record.
+
+
+## Version 4
+- Kortare och tydligare text vid nollställning av valörräkningen.
+- Borttagen sidfot med integritetsinformation.
+- Mindre utrymme nedtill och uppdaterad offline-cache.
+- Registrerade kontantbevägelser sparas fortfarande lokalt.
