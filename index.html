@@ -19,13 +19,9 @@
 <body>
 <header class="appbar">
   <div class="brand"><span class="brand-mark" aria-hidden="true">kr</span><strong>Kasseoptælling</strong></div>
-  <div class="app-meta"><span id="appVersion" class="version">v9.0.0</span><span class="offline-status" id="status">Offline-klar</span></div>
+  <div class="app-meta"><span id="appVersion" class="version">v10.0.0</span><span class="offline-status" id="status">Offline-klar</span></div>
 </header>
 <main>
-  <nav class="tabs" aria-label="Funktioner">
-    <button type="button" class="tab active" data-tab="count" aria-selected="true">Optælling</button>
-    <button type="button" class="tab" data-tab="moves" aria-selected="false">Ind / ud</button>
-  </nav>
   <section class="panel" id="count">
     <div class="workspace">
       <div class="denominations">
@@ -50,9 +46,7 @@
       </aside>
     </div>
   </section>
-  <section class="panel hidden" id="moves">
-    <div class="movement-layout"><div class="card"><h1>Kontantbevægelse</h1><div class="field"><label for="movementType">Type</label><select id="movementType"><option value="in">Indbetaling (+)</option><option value="out">Udbetaling (−)</option></select></div><div class="field"><label for="movementAmount">Beløb (DKK)</label><input id="movementAmount" type="text" inputmode="decimal" placeholder="F.eks. 125,50"></div><div class="field"><label for="movementReason">Årsag</label><select id="movementReason"><option>Kontantsalg</option><option>Vekselpenge</option><option>Indsætning</option><option>Udtagning til bank</option><option>Kontantrefusion</option><option>Andet</option></select></div><div class="field"><label for="movementNote">Bemærkning (valgfri)</label><input id="movementNote" maxlength="160" placeholder="Kort note"></div><button class="confirm" id="addMovement" type="button">Registrér bevægelse</button></div><div class="card"><div class="heading-row"><h2>Dagens bevægelser</h2><strong id="movementNet">0,00 kr.</strong></div><div id="movementList" class="movement-list"></div></div></div>
-  </section>
+
 </main>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
