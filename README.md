@@ -1,47 +1,27 @@
-# Kasseoptælling — Security-hardened pilot v8
+# Cash Counter / Kasseoptælling v9.0.0 — pilot
 
-Static, offline-capable Danish cash-counting PWA. No authentication, analytics, trackers, external JS/CSS, third-party libraries or remote API calls.
+Offline-ready Danish cash-counting PWA for iPad and iPhone. Interface borrows general workflow ideas from POS counting screens, without copying the vendor's design or source.
 
 ## Features
-- Danish notes (500, 200, 100, 50 kr) and coins (20, 10, 5, 2, 1 kr and 50 øre)
-- Separate totals for notes and coins; combined total
-- Register cash movements (in/out) with reason, optional note, and time
-- Reset **all current-day data** (counts and movements) after confirmation
-- Date is automatic (device local date) and not editable; data remains local to the individual browser/web-app installation
-- No export, no saved day-close screen, no store/cash-register input
+- iPad landscape: coins and notes on the left, numeric keypad and live totals on the right
+- iPhone: compact one-category-at-a-time denomination list and numeric keypad; some scrolling may still occur
+- Select denomination, enter quantity with keypad, increment/decrement with buttons, Next advances to next denomination
+- Notes and coins subtotals, combined total, cash movements (in/out)
+- Start forfra resets current date's saved counts and movements after confirmation
+- Confirm count only shows a local confirmation; **it does not close or submit a POS settlement**
+- Header shows the **running JavaScript version** and offline-ready status
+- No external dependencies, trackers, login, API calls, or export
 
-## Security changes introduced in v6
-- HTML Content Security Policy (CSP) via a meta tag: same-origin scripts, styles, workers, and connections only; blocks object embeds and form submissions
-- DOM nodes for denomination rows constructed using createElement and textContent (no innerHTML)
-- Service worker uses network-first for freshness with offline cached fallback and only removes its own old cache versions
-- Checks for a new service worker when app returns to foreground online
-- Same localStorage key and date/store keying as v1-v5 to avoid unexpected data migration or deletion
+## Deploy
+1. Create a new branch `pilot-v9` from current `main`.
+2. Upload all 9 extracted files to the repository root of that branch.
+3. Commit and open a Pull Request to `main`.
+4. Review changes, Squash and merge to publish GitHub Pages.
+5. Verify version v9.0.0, test offline, check totals, movement registration, reset, and iPad/iPhone layout.
 
-## Publish to GitHub Pages
-1. Unzip and upload all files directly to repository root (not the enclosing folder).
-2. Commit using a branch + Pull Request if main branch rulesets require it.
-3. Verify GitHub Actions pages deployment, then open HTTPS Pages URL.
-4. With internet, perform tests and verify totals; reload once after update; switch to airplane mode to confirm offline behavior.
-5. Test in Safari and the actual Intune Web Clip independently; storage and multitasking can differ.
-
-## Critical limitations
-- **Development / test only.** Not a POS or accounting system. No tamper-evident audit trail, backend, user roles, central backup or synchronization.
-- localStorage contains unencrypted-at-application-layer data and can be cleared by device/browser policy. No sensitive data or real register records in this public pilot.
-- Any author able to modify the published repository can replace served code. Protect GitHub account, main branch and repository write access.
-- CSP in a meta tag cannot set `frame-ancestors`. On a separately controlled production host, also send a CSP response header and appropriate security headers.
-- Service worker updates and browser cache require device validation; do not assume cached data will always be retained by iOS.
-
-## Developer smoke test
-From the folder run `python3 -m http.server 8000` and open `http://localhost:8000` on the same computer. iOS devices need HTTPS hosting for service workers.
-
-## Version identification (v8)
-- The top right shows `v8.0.0`, populated from the running JavaScript. It remains visible offline.
-- `Offline-klar` means offline support is initialized, **not** that the latest version is installed.
-- A user can report this version to support. Compare it with the approved release in GitHub.
-- The version must be updated in `app.js`, the initial `index.html` fallback and the service worker cache name for every release.
-- This pilot does **not** query the latest server version, and it does not centrally report device versions.
-
-## v8 layout
-- The date input is removed; data is still keyed to device-local calendar day. Foregrounding the app refreshes the displayed day.
-- On narrow iPhone screens, switch between Sedler and Mønter; on wider iPads both are displayed in columns.
-- Both section subtotals appear on the selector and under each section; overall total remains above.
+## Data and security notes
+- Data remains in `localStorage` using previous `dk-cash-count-v1` key for compatibility. Upgrades should not intentionally clear local cash counts.
+- No back-end storage, backup, audit trail or synchronization. Use fictional data only in this public pilot.
+- Content Security Policy blocks scripts and resources from other origins; code uses safe DOM creation/textContent.
+- App offline status denotes service worker readiness, **not** proof that a newer app version is not available.
+- Quantity input is read-only, so users use in-app keypad; this avoids the iOS virtual keyboard obscuring the counting UI.
