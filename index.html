@@ -20,7 +20,7 @@
   <header class="appbar">
     <div class="brand"><span class="brand-mark" aria-hidden="true">kr</span><strong>Kasseoptælling</strong></div>
     <div class="app-meta">
-      <span id="appVersion" class="version">v2.2</span>
+      <span id="appVersion" class="version">v2.4</span>
       <span id="status" class="offline-status">Offline-klar</span>
     </div>
   </header>
@@ -78,6 +78,13 @@
     </section>
   </main>
 
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <section id="updateBanner" class="update-banner" role="status" aria-live="polite" hidden>
+    <div class="update-copy"><strong>Ny version er klar</strong><span>Opdatér appen, når du er færdig med at tælle.</span></div>
+    <div class="update-actions">
+      <button id="updateLater" type="button" class="update-later">Senere</button>
+      <button id="updateNow" type="button" class="update-now">Opdatér nu</button>
+    </div>
+  </section>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 </body>
 </html>
