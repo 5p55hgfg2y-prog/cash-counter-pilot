@@ -1,21 +1,21 @@
-# Kasseoptælling v2.2
+# Cash Counter PWA v2.4 — pilot
 
-PWA for enkel optælling af sedler og mønter.
+## Förändringar
+- Den svarta bekräftelserutan efter **Start forfra** visas kort och döljs sedan helt (`hidden`), utan att lämna en synlig kant längst ned på iPad.
+- Innehåller v2.3:s automatiska uppdateringskontroll: vid start, när appen får fokus och var 30:e minut online. Nästa service worker väntar på **Opdatér nu**.
+- Samma danska valörer och kompakta iPad-layout som i v2.2. Versionsnummer `v2.4` och offlineindikator finns kvar.
+- Samma `localStorage`-nyckel `cash-counter-v2_2` så befintliga provantal kan finnas kvar.
 
-## Funktioner
-- Omnium-inspireret optællingslayout
-- Offline-støtte
-- Versionsvisning i appen
-- Lokal lagring på enheden
-- Ingen POS-integration
-- Ingen ind/ud-funktion
+## Publicering
+1. Skapa branch `pilot-v2-4` från `main`.
+2. Ladda upp de **nio filerna inuti ZIP-filen** direkt i repositoryts rot.
+3. Commit och Pull Request till `main`, kontrollera ändringarna och mergea.
+4. GitHub Pages ska därefter visa `v2.4`. Ändra inte Web Clip-URL i Intune.
 
-## v2.2 layout
-- Compact landscape layout on iPad (at least 900 CSS pixels wide)
-- All denominations intended to fit on a typical landscape iPad without full-page scrolling
-- Independent denomination-list scrolling is used when the viewport is too short
-- iPhone styling unchanged
-- Offline cache version: cash-counter-2-2
+## Verifiera på iPad
+- Öppna `v2.4`, testa valörer och totaler.
+- Tryck **Start forfra**, godkänn och kontrollera att notisen försvinner helt efter cirka två sekunder, även efter att du scrollar.
+- Kontrollera befintliga testantal, offline och återstart.
+- Uppdateringsnotisen kan testas fullt ut när en **senare** version publiceras (v2.4 innehåller nu väntande-worker-flödet).
 
-- Uses valid Danish denominations: coins 50 øre, 1, 2, 5, 10, 20 kr; notes 50, 100, 200, 500 kr.
-- New local storage key for pilot v2.2 because denominations were corrected; earlier pilot counts are not imported.
+**Endast pilot med testbelopp.** Webbappen är inte integrerad med POS och saknar central datalagring.

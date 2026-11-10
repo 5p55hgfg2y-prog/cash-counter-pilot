@@ -1,4 +1,4 @@
-const VERSION = 'v2.2';
+const VERSION = 'v2.4';
 const STORAGE_KEY = 'cash-counter-v2_2';
 const DENOMS = [
   { id:'0.5', ore:50, kind:'coin', label:'50 øre', badge:'coin05' },
@@ -204,10 +204,14 @@ function setMobileView(kind) {
 
 function notify(message) {
   const t = $('toast');
-  t.textContent = message;
-  t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+  t.textContent = message;
+  t.hidden = false;
+  t.classList.add('show');
+  toastTimer = setTimeout(() => {
+    t.classList.remove('show');
+    t.hidden = true;
+  }, 1800);
 }
 
 function resetAll() {
@@ -250,16 +254,78 @@ function init() {
     $('notesGroup').classList.add('visible');
   }
 
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').then(() => {
-      $('status').textContent = 'Offline-klar';
-    }).catch(() => {
-      $('status').textContent = navigator.onLine ? 'Online' : 'Offline';
-    });
+  initUpdates();
+}
+
+// New-version flow: continue using the installed code until the user accepts.
+let updateRegistration = null;
+let updateRequested = false;
+let updateDeferred = false;
+
+function showUpdateNotice(registration) {
+  if (!navigator.serviceWorker.controller || !registration.waiting) return;
+  updateRegistration = registration;
+  if (!updateDeferred) $('updateBanner').hidden = false;
+}
+
+function checkForUpdates() {
+  if (navigator.onLine === false || !updateRegistration) return;
+  updateRegistration.update().catch(() => {});
+}
+
+function initUpdates() {
+  $('updateLater').addEventListener('click', () => {
+    updateDeferred = true;
+    $('updateBanner').hidden = true;
+  });
+  $('updateNow').addEventListener('click', () => {
+    const waiting = updateRegistration && updateRegistration.waiting;
+    if (!waiting) return;
+    // Ensure current quantities are saved before the service worker changes.
+    save();
+    updateRequested = true;
+    $('updateNow').disabled = true;
+    $('updateNow').textContent = 'Opdaterer…';
+    waiting.postMessage({ type: 'SKIP_WAITING' });
+  });
+
+  window.addEventListener('online', () => {
+    if (updateRegistration) $('status').textContent = 'Offline-klar';
+    checkForUpdates();
+  });
+  window.addEventListener('offline', () => $('status').textContent = 'Offline');
+
+  if (!('serviceWorker' in navigator)) {
+    $('status').textContent = navigator.onLine ? 'Online' : 'Offline';
+    return;
   }
 
-  window.addEventListener('online', () => $('status').textContent = 'Offline-klar');
-  window.addEventListener('offline', () => $('status').textContent = 'Offline');
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    // Only reload if the user has explicitly accepted the update.
+    if (updateRequested) window.location.reload();
+  });
+
+  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(registration => {
+    updateRegistration = registration;
+    $('status').textContent = navigator.onLine ? 'Offline-klar' : 'Offline';
+    if (registration.waiting) showUpdateNotice(registration);
+    registration.addEventListener('updatefound', () => {
+      const installing = registration.installing;
+      if (!installing) return;
+      installing.addEventListener('statechange', () => {
+        if (installing.state === 'installed') showUpdateNotice(registration);
+      });
+    });
+    // A check on each launch, when the user returns, and periodically while online.
+    checkForUpdates();
+    window.addEventListener('focus', checkForUpdates);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) checkForUpdates();
+    });
+    setInterval(checkForUpdates, 30 * 60 * 1000);
+  }).catch(() => {
+    $('status').textContent = navigator.onLine ? 'Online' : 'Offline';
+  });
 }
 
 document.addEventListener('DOMContentLoaded', init);
