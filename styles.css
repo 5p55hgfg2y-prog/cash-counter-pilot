@@ -155,3 +155,21 @@ p{margin:0;color:var(--muted)}
 .update-later{color:#fff;background:transparent;border:1px solid #76959a}
 .update-now{color:#073c45;background:#bce7e4;border:1px solid #bce7e4}
 @media(max-width:650px){.update-banner{align-items:stretch;flex-direction:column}.update-actions button{flex:1}}
+
+/* v2.5: Avoid iPadOS/Safari double-tap zoom on rapidly repeated POS taps.
+   Keep pinch zoom available for accessibility and do not disable viewport scaling. */
+button,
+button *,
+.row {
+  touch-action: manipulation;
+}
+button {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+/* Avoid text selection when rapidly tapping +/- or keypad controls. */
+.controls, .keypad, .keypad-wrap {
+  -webkit-user-select: none;
+  user-select: none;
+}
