@@ -1,52 +1,265 @@
-'use strict';
-// Static standalone PWA. All amounts are represented as integer Danish øre.
-const APP_VERSION='10.0.0';
-const DENOMS=[
-  {ore:2000,name:'20 kr.',kind:'coin'},{ore:1000,name:'10 kr.',kind:'coin'},
-  {ore:500,name:'5 kr.',kind:'coin'},{ore:200,name:'2 kr.',kind:'coin'},
-  {ore:100,name:'1 kr.',kind:'coin'},{ore:50,name:'50 øre',kind:'coin'},
-  {ore:5000,name:'50 kr.',kind:'note'},{ore:10000,name:'100 kr.',kind:'note'},
-  {ore:20000,name:'200 kr.',kind:'note'},{ore:50000,name:'500 kr.',kind:'note'}
+const VERSION = 'v2.1';
+const STORAGE_KEY = 'cash-counter-v2_1';
+const DENOMS = [
+  { id:'1', ore:100, kind:'coin', label:'1', badge:'coin1' },
+  { id:'2', ore:200, kind:'coin', label:'2', badge:'coin2' },
+  { id:'5', ore:500, kind:'coin', label:'5', badge:'coin5' },
+  { id:'10', ore:1000, kind:'coin', label:'10', badge:'coin10' },
+  { id:'20', ore:2000, kind:'note', label:'20', badge:'note20' },
+  { id:'50', ore:5000, kind:'note', label:'50', badge:'note50' },
+  { id:'100', ore:10000, kind:'note', label:'100', badge:'note100' },
+  { id:'200', ore:20000, kind:'note', label:'200', badge:'note200' },
+  { id:'500', ore:50000, kind:'note', label:'500', badge:'note500' },
+  { id:'1000', ore:100000, kind:'note', label:'1000', badge:'note1000' }
 ];
-const KEY='dk-cash-count-v1'; // Preserve the existing v1-v8 local storage.
-const el=id=>document.getElementById(id);
-const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');};
-const blank=()=>({counts:{},opening:0,movements:[],closings:[],closingNote:''});
-const money=ore=>(ore/100).toLocaleString('da-DK',{minimumFractionDigits:2,maximumFractionDigits:2})+' kr.';
-const make=(tag,cls,content)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(content!==undefined)e.textContent=content;return e;};
-function readStorage(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.version===1&&d.days&&typeof d.days==='object'&&!Array.isArray(d.days))return d;}catch(_){ }return {version:1,store:'',days:{}};}
-let data=readStorage(),store=data.store||'',date=today(),selected=DENOMS[0].ore,activeCash='coin',noticeTimer;
-const dayKey=()=>store.trim()+'|'+date;
-const current=()=>data.days[dayKey()]||blank();
-function mutable(){const k=dayKey();if(!data.days[k])data.days[k]=blank();return data.days[k];}
-function toast(message){const node=el('toast');node.textContent=message;node.classList.add('visible');clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>node.classList.remove('visible'),2700);}
-function save(){try{data.store=store;localStorage.setItem(KEY,JSON.stringify(data));}catch(_){toast('Lagring mislykkedes. Kontrollér enheden.');}}
-const subtotal=(d,kind)=>DENOMS.filter(x=>x.kind===kind).reduce((sum,x)=>sum+x.ore*(d.counts[x.ore]||0),0);
-const total=d=>subtotal(d,'coin')+subtotal(d,'note');
-function setSelected(ore){selected=ore;document.querySelectorAll('.denom').forEach(row=>{const on=Number(row.dataset.ore)===ore;row.classList.toggle('selected',on);row.querySelector('.qty').classList.toggle('selected',on);});const dn=DENOMS.find(x=>x.ore===ore);if(window.matchMedia('(max-width:600px)').matches&&dn)chooseCash(dn.kind);}
-function setCount(ore,value){const n=Number(value);const qty=Math.max(0,Math.min(999999,Number.isFinite(n)?Math.floor(n):0));mutable().counts[ore]=qty;save();renderCounts();}
-function renderCounts(){const d=current();document.querySelectorAll('.denom').forEach(row=>{const ore=Number(row.dataset.ore),n=d.counts[ore]||0;row.querySelector('.qty').value=String(n);row.querySelector('.subtotal').textContent=money(n*ore);});el('countTotal').textContent=money(total(d));el('coinsTotal').textContent=money(subtotal(d,'coin'));el('notesTotal').textContent=money(subtotal(d,'note'));el('coinsSwitchTotal').textContent=money(subtotal(d,'coin'));el('notesSwitchTotal').textContent=money(subtotal(d,'note'));}
-function render(){renderCounts();}
-function chooseCash(kind){activeCash=kind;document.querySelectorAll('.category').forEach(btn=>{const on=btn.dataset.cash===kind;btn.classList.toggle('selected',on);btn.setAttribute('aria-pressed',String(on));});el('notesGroup').classList.toggle('mobile-hide',kind!=='note');el('coinsGroup').classList.toggle('mobile-hide',kind!=='coin');}
-function createRows(){for(const dn of DENOMS){const row=make('div','denom');row.dataset.ore=String(dn.ore);const label=make('span','money-label '+dn.kind+'-'+dn.ore,dn.name);const times=make('span','times','×'),minus=make('button','step','−'),qty=make('input','qty'),plus=make('button','step','+'),amount=make('span','subtotal',money(0));minus.type='button';plus.type='button';minus.setAttribute('aria-label','Færre '+dn.name);plus.setAttribute('aria-label','Flere '+dn.name);qty.type='text';qty.inputMode='none';qty.readOnly=true;qty.value='0';qty.setAttribute('aria-label','Antal '+dn.name);qty.addEventListener('click',()=>setSelected(dn.ore));row.addEventListener('click',e=>{if(e.target!==minus&&e.target!==plus)setSelected(dn.ore);});minus.addEventListener('click',()=>{setSelected(dn.ore);setCount(dn.ore,(current().counts[dn.ore]||0)-1);});plus.addEventListener('click',()=>{setSelected(dn.ore);setCount(dn.ore,(current().counts[dn.ore]||0)+1);});row.append(label,times,minus,qty,plus,amount);el(dn.kind==='note'?'notes':'coins').append(row);}}
-function nextDenom(){const index=DENOMS.findIndex(d=>d.ore===selected);const next=DENOMS[(index+1)%DENOMS.length];setSelected(next.ore);const row=document.querySelector('.denom[data-ore="'+next.ore+'"]');if(row&&!window.matchMedia('(min-width:851px)').matches)row.scrollIntoView({block:'nearest',behavior:'smooth'});}
-function keypad(key){if(key==='clear'){setCount(selected,0);return;}const old=current().counts[selected]||0;if(key==='back'){setCount(selected,Math.floor(old/10));return;}const str=String(old===0?'':old)+key;setCount(selected,Number(str));}
-function init(){
-  el('appVersion').textContent='v'+APP_VERSION;
-  createRows();chooseCash('coin');setSelected(selected);render();
-  document.querySelectorAll('.category').forEach(btn=>btn.addEventListener('click',()=>{chooseCash(btn.dataset.cash);const first=DENOMS.find(x=>x.kind===btn.dataset.cash);if(first)setSelected(first.ore);}));
-  document.querySelectorAll('.keypad button').forEach(btn=>btn.addEventListener('click',()=>keypad(btn.dataset.key)));
-  el('nextDenom').addEventListener('click',nextDenom);
-  el('resetCount').addEventListener('click',()=>{if(confirm('Vil du nulstille alt?')){data.days[dayKey()]=blank();save();render();toast('Optællingen er nulstillet.');}});
-  el('confirmCount').addEventListener('click',()=>toast('Optællingen er gemt lokalt på denne enhed.'));
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){const n=today();if(n!==date){date=n;render();toast('Ny dag – dagens optælling vises.');}}});
-  if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(reg=>{
-      navigator.serviceWorker.ready.then(()=>el('status').textContent='Offline-klar').catch(()=>{});
-      document.addEventListener('visibilitychange',()=>{if(!document.hidden&&navigator.onLine)reg.update().catch(()=>{});});
-      navigator.serviceWorker.addEventListener('controllerchange',()=>{const key='dk-reload-v10';if(sessionStorage.getItem(key)!=='1'){sessionStorage.setItem(key,'1');location.reload();}});
-    }).catch(()=>el('status').textContent='Offline ej klar');
-  }else{el('status').textContent='Offline ej klar';}
+
+const state = {
+  counts: {},
+  selected: DENOMS[0].id,
+  mobileView: 'coin'
+};
+
+const $ = id => document.getElementById(id);
+const byId = new Map(DENOMS.map(d => [d.id, d]));
+let toastTimer = null;
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object' && parsed.counts) {
+      state.counts = parsed.counts;
+      if (parsed.selected && byId.has(parsed.selected)) state.selected = parsed.selected;
+      if (parsed.mobileView === 'coin' || parsed.mobileView === 'note') state.mobileView = parsed.mobileView;
+    }
+  } catch {}
 }
 
-init();
+function save() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      counts: state.counts,
+      selected: state.selected,
+      mobileView: state.mobileView
+    }));
+  } catch {}
+}
+
+function money(ore) {
+  return new Intl.NumberFormat('da-DK', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((ore || 0)/100) + ' kr.';
+}
+
+function countFor(id) { return Math.max(0, parseInt(state.counts[id] || 0, 10) || 0); }
+function setCount(id, value) { state.counts[id] = Math.max(0, parseInt(value || 0, 10) || 0); }
+
+function subtotal(denom) { return countFor(denom.id) * denom.ore; }
+function sum(kind) { return DENOMS.filter(d => !kind || d.kind === kind).reduce((acc,d) => acc + subtotal(d), 0); }
+
+function buildRow(denom) {
+  const row = document.createElement('div');
+  row.className = 'row';
+  row.dataset.id = denom.id;
+
+  const label = document.createElement('div');
+  label.className = 'denom-label';
+  const badge = document.createElement('span');
+  badge.className = `badge ${denom.badge}`;
+  badge.textContent = denom.label;
+  const suffix = document.createElement('span');
+  suffix.textContent = denom.kind === 'coin' ? '' : '';
+  label.appendChild(badge);
+
+  const controls = document.createElement('div');
+  controls.className = 'controls';
+  const minus = document.createElement('button');
+  minus.type = 'button';
+  minus.className = 'mini';
+  minus.textContent = '−';
+  minus.addEventListener('click', () => {
+    state.selected = denom.id;
+    setCount(denom.id, countFor(denom.id) - 1);
+    afterChange();
+  });
+  const input = document.createElement('input');
+  input.className = 'qty';
+  input.inputMode = 'numeric';
+  input.pattern = '[0-9]*';
+  input.value = String(countFor(denom.id));
+  input.setAttribute('aria-label', `Antal ${denom.label}`);
+  input.addEventListener('focus', () => { state.selected = denom.id; refreshSelection(); save(); });
+  input.addEventListener('input', e => {
+    state.selected = denom.id;
+    const digits = String(e.target.value || '').replace(/\D/g,'');
+    setCount(denom.id, digits === '' ? 0 : parseInt(digits, 10));
+    afterChange(false);
+  });
+  const plus = document.createElement('button');
+  plus.type = 'button';
+  plus.className = 'mini';
+  plus.textContent = '+';
+  plus.addEventListener('click', () => {
+    state.selected = denom.id;
+    setCount(denom.id, countFor(denom.id) + 1);
+    afterChange();
+  });
+  controls.append(minus, input, plus);
+
+  const sub = document.createElement('div');
+  sub.className = 'subtotal';
+  sub.textContent = money(subtotal(denom));
+
+  row.addEventListener('click', e => {
+    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
+    state.selected = denom.id;
+    refreshSelection();
+    input.focus();
+    save();
+  });
+
+  row.append(label, controls, sub);
+  return row;
+}
+
+function renderRows() {
+  const coins = $('coins');
+  const notes = $('notes');
+  coins.replaceChildren(...DENOMS.filter(d => d.kind === 'coin').map(buildRow));
+  notes.replaceChildren(...DENOMS.filter(d => d.kind === 'note').map(buildRow));
+}
+
+function refreshSelection() {
+  document.querySelectorAll('.row').forEach(row => {
+    row.classList.toggle('active', row.dataset.id === state.selected);
+  });
+}
+
+function renderTotals() {
+  $('countTotal').textContent = money(sum());
+  $('coinsTotal').textContent = money(sum('coin'));
+  $('notesTotal').textContent = money(sum('note'));
+  $('coinsSwitchTotal').textContent = money(sum('coin'));
+  $('notesSwitchTotal').textContent = money(sum('note'));
+}
+
+function refreshRows() {
+  document.querySelectorAll('.row').forEach(row => {
+    const denom = byId.get(row.dataset.id);
+    row.querySelector('.qty').value = String(countFor(denom.id));
+    row.querySelector('.subtotal').textContent = money(subtotal(denom));
+  });
+  refreshSelection();
+  renderTotals();
+}
+
+function afterChange(showSaved = false) {
+  refreshRows();
+  save();
+  if (showSaved) notify('Opdateret');
+}
+
+function cycleNext() {
+  const visible = DENOMS.filter(d => window.innerWidth > 700 || d.kind === state.mobileView);
+  const idx = visible.findIndex(d => d.id === state.selected);
+  const next = visible[(idx + 1 + visible.length) % visible.length];
+  state.selected = next.id;
+  save();
+  refreshSelection();
+  const row = document.querySelector(`.row[data-id="${next.id}"] .qty`);
+  if (row) row.focus();
+}
+
+function keypadPress(key) {
+  const current = String(countFor(state.selected));
+  if (key === 'clear') {
+    setCount(state.selected, 0);
+  } else if (key === 'back') {
+    const next = current.length > 1 ? current.slice(0, -1) : '0';
+    setCount(state.selected, parseInt(next,10) || 0);
+  } else {
+    const next = current === '0' ? key : `${current}${key}`;
+    setCount(state.selected, parseInt(next,10) || 0);
+  }
+  afterChange();
+  const input = document.querySelector(`.row[data-id="${state.selected}"] .qty`);
+  if (input) input.focus();
+}
+
+function setMobileView(kind) {
+  state.mobileView = kind;
+  document.querySelectorAll('.category').forEach(btn => {
+    const on = btn.dataset.cash === kind;
+    btn.classList.toggle('selected', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  $('coinsGroup').classList.toggle('visible', kind === 'coin');
+  $('notesGroup').classList.toggle('visible', kind === 'note');
+  if (window.innerWidth <= 700) {
+    const valid = DENOMS.filter(d => d.kind === kind).map(d => d.id);
+    if (!valid.includes(state.selected)) state.selected = valid[0];
+  }
+  refreshSelection();
+  save();
+}
+
+function notify(message) {
+  const t = $('toast');
+  t.textContent = message;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+function resetAll() {
+  if (!confirm('Vil du starte forfra?')) return;
+  state.counts = {};
+  state.selected = DENOMS[0].id;
+  save();
+  refreshRows();
+  notify('Optællingen er nulstillet.');
+}
+
+function init() {
+  $('appVersion').textContent = VERSION;
+  load();
+  renderRows();
+  setMobileView(state.mobileView);
+  refreshRows();
+
+  document.querySelectorAll('.category').forEach(btn => {
+    btn.addEventListener('click', () => setMobileView(btn.dataset.cash));
+  });
+  document.querySelectorAll('.keypad button').forEach(btn => {
+    btn.addEventListener('click', () => keypadPress(btn.dataset.key));
+  });
+  $('nextDenom').addEventListener('click', cycleNext);
+  $('resetCount').addEventListener('click', resetAll);
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 700) {
+      $('coinsGroup').classList.add('visible');
+      $('notesGroup').classList.add('visible');
+    } else {
+      setMobileView(state.mobileView);
+    }
+    refreshSelection();
+  });
+
+  if (window.innerWidth > 700) {
+    $('coinsGroup').classList.add('visible');
+    $('notesGroup').classList.add('visible');
+  }
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').then(() => {
+      $('status').textContent = 'Offline-klar';
+    }).catch(() => {
+      $('status').textContent = navigator.onLine ? 'Online' : 'Offline';
+    });
+  }
+
+  window.addEventListener('online', () => $('status').textContent = 'Offline-klar');
+  window.addEventListener('offline', () => $('status').textContent = 'Offline');
+}
+
+document.addEventListener('DOMContentLoaded', init);
