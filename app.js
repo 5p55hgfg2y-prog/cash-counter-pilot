@@ -1,16 +1,16 @@
-const VERSION = 'v2.1';
-const STORAGE_KEY = 'cash-counter-v2_1';
+const VERSION = 'v2.2';
+const STORAGE_KEY = 'cash-counter-v2_2';
 const DENOMS = [
+  { id:'0.5', ore:50, kind:'coin', label:'50 øre', badge:'coin05' },
   { id:'1', ore:100, kind:'coin', label:'1', badge:'coin1' },
   { id:'2', ore:200, kind:'coin', label:'2', badge:'coin2' },
   { id:'5', ore:500, kind:'coin', label:'5', badge:'coin5' },
   { id:'10', ore:1000, kind:'coin', label:'10', badge:'coin10' },
-  { id:'20', ore:2000, kind:'note', label:'20', badge:'note20' },
+  { id:'20', ore:2000, kind:'coin', label:'20', badge:'coin20' },
   { id:'50', ore:5000, kind:'note', label:'50', badge:'note50' },
   { id:'100', ore:10000, kind:'note', label:'100', badge:'note100' },
   { id:'200', ore:20000, kind:'note', label:'200', badge:'note200' },
-  { id:'500', ore:50000, kind:'note', label:'500', badge:'note500' },
-  { id:'1000', ore:100000, kind:'note', label:'1000', badge:'note1000' }
+  { id:'500', ore:50000, kind:'note', label:'500', badge:'note500' }
 ];
 
 const state = {

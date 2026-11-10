@@ -89,3 +89,56 @@ p{margin:0;color:var(--muted)}
   .next{font-size:.98rem}
   .confirm{min-height:56px;font-size:1.05rem}
 }
+
+/* v2.2 - landscape POS layout for iPad. Mobile portrait styling above is unchanged. */
+@media (min-width: 900px) and (orientation: landscape) {
+  html, body { min-height: 100%; }
+  .appbar { min-height: 48px; padding: 7px 14px; }
+  .brand { font-size: 1rem; gap: 8px; }
+  .brand-mark { width: 28px; height: 28px; border-radius: 8px; }
+  .app-meta { flex-direction: row; align-items: center; }
+  .version, .offline-status { padding: 3px 8px; font-size: .76rem; }
+  main { padding: 8px 12px; }
+  .workspace { grid-template-columns: minmax(0, 1.55fr) minmax(290px, .83fr); gap: 10px; }
+  .denominations { padding: 11px 13px; border-radius: 15px; }
+  .count-tools { padding: 12px; border-radius: 15px; gap: 10px; }
+  .heading-row { margin-bottom: 6px; }
+  h1 { font-size: 1.18rem; margin-bottom: 0; line-height: 1.15; }
+  .heading-row p { font-size: .73rem; }
+  .denom-group h2 { font-size: .74rem; margin: 0 0 4px; line-height: 1.1; }
+  .denom-group + .denom-group { margin-top: 9px; }
+  .denom-list { gap: 4px; }
+  .row { min-height: 42px; grid-template-columns: 68px minmax(0, 1fr) 95px; gap: 6px; padding: 2px 8px; border-radius: 10px; }
+  .badge { min-width: 48px; height: 28px; padding: 0 7px; font-size: .86rem; }
+  .controls { gap: 5px; }
+  .mini { width: 40px; height: 40px; font-size: 1.4rem; }
+  .qty { width: 60px; height: 34px; font-size: 1rem; border-radius: 8px; }
+  .subtotal { font-size: .84rem; }
+  .total-box { padding: 1px 2px 5px; }
+  .eyebrow { font-size: .7rem; }
+  #countTotal { font-size: 2rem; margin: 2px 0 4px; }
+  .split-totals { gap: 9px; font-size: .79rem; }
+  .keypad-wrap { grid-template-columns: minmax(0,1fr) 72px; gap: 7px; }
+  .keypad { gap: 7px; }
+  .keypad button, .next { min-height: 50px; border-radius: 10px; font-size: 1.5rem; }
+  .next { font-size: .94rem; gap: 4px; }
+  .next span { font-size: 1.5rem; }
+  .confirm { min-height: 46px; border-radius: 11px; font-size: 1rem; }
+}
+
+/* On compact-height iPads the denomination list scrolls independently if needed. */
+@media (min-width: 900px) and (orientation: landscape) and (max-height: 820px) {
+  body { height: 100dvh; overflow: hidden; }
+  main { height: calc(100dvh - 48px); overflow: hidden; }
+  .workspace { height: 100%; }
+  .denominations { overflow-y: auto; overscroll-behavior: contain; min-height: 0; }
+  .count-tools { align-self: start; }
+}
+
+@media (min-width: 900px) and (orientation: landscape) and (max-height: 680px) {
+  .row { min-height: 39px; }
+  .mini { height: 36px; width: 36px; }
+  .keypad button, .next { min-height: 44px; }
+}
+
+.badge.coin05{background:#b78d73;color:#fff}.badge.coin20{background:#bcac73;color:#463916}
