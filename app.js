@@ -1,4 +1,4 @@
-const VERSION = 'v2.4';
+const VERSION = 'v2.5';
 const STORAGE_KEY = 'cash-counter-v2_2';
 const DENOMS = [
   { id:'0.5', ore:50, kind:'coin', label:'50 øre', badge:'coin05' },
