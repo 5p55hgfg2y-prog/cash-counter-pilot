@@ -1,4 +1,4 @@
-const CACHE = 'cash-counter-2-1';
+const CACHE = 'cash-counter-2-2';
 const ASSETS = [
   './',
   './index.html',
