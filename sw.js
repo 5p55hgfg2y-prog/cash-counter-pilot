@@ -1,5 +1,5 @@
 // Version-specific cache; no forced activation during an active count.
-const CACHE = 'cash-counter-2-6';
+const CACHE = 'cash-counter-2-7';
 const ASSETS = [
   './', './index.html', './styles.css', './app.js',
   './manifest.webmanifest', './icon-180.png', './icon-192.png', './icon-512.png'
