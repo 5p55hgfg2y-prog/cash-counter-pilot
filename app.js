@@ -1,4 +1,4 @@
-const VERSION = 'v2.6';
+const VERSION = 'v2.7';
 const STORAGE_KEY = 'cash-counter-v2_2';
 const DENOMS = [
   { id:'500', ore:50000, kind:'note', label:'500', badge:'note500' },
@@ -83,23 +83,47 @@ function buildRow(denom) {
   });
   const input = document.createElement('input');
   input.className = 'qty';
-  input.inputMode = 'numeric';
+  // Read-only fields prevent the iPadOS virtual keyboard from appearing.
+  // A hardware keyboard is handled explicitly in keydown below.
+  input.type = 'text';
+  input.readOnly = true;
+  input.inputMode = 'none';
   input.pattern = '[0-9]*';
   input.value = String(countFor(denom.id));
   input.setAttribute('aria-label', `Antal ${denom.label}`);
-  // Tab/Shift+Tab should always move between quantity inputs, skipping +/- and keypad.
+  // Hardware keyboards: keep Tab/Shift+Tab navigation despite readonly.
+  // Digits, Backspace and Delete/C also work without a software keyboard.
   input.addEventListener('keydown', event => {
-    if (event.key !== 'Tab') return;
-    event.preventDefault();
-    focusAdjacentDenomination(event.shiftKey ? -1 : 1);
+    if (event.key === 'Tab') {
+      event.preventDefault();
+      state.selected = denom.id;
+      focusAdjacentDenomination(event.shiftKey ? -1 : 1);
+      return;
+    }
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+    if (/^[0-9]$/.test(event.key)) {
+      event.preventDefault();
+      state.selected = denom.id;
+      keypadPress(event.key);
+    } else if (event.key === 'Backspace') {
+      event.preventDefault();
+      state.selected = denom.id;
+      keypadPress('back');
+    } else if (event.key === 'Delete' || event.key.toLowerCase() === 'c') {
+      event.preventDefault();
+      state.selected = denom.id;
+      keypadPress('clear');
+    } else if (event.key === 'ArrowDown' || event.key === 'Enter') {
+      event.preventDefault();
+      state.selected = denom.id;
+      focusAdjacentDenomination(1);
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      state.selected = denom.id;
+      focusAdjacentDenomination(-1);
+    }
   });
   input.addEventListener('focus', () => { state.selected = denom.id; refreshSelection(); save(); });
-  input.addEventListener('input', e => {
-    state.selected = denom.id;
-    const digits = String(e.target.value || '').replace(/\D/g,'');
-    setCount(denom.id, digits === '' ? 0 : parseInt(digits, 10));
-    afterChange(false);
-  });
   const plus = document.createElement('button');
   plus.type = 'button';
   plus.className = 'mini';
