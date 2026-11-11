@@ -20,7 +20,7 @@
   <header class="appbar">
     <div class="brand"><span class="brand-mark" aria-hidden="true">kr</span><strong>Kasseoptælling</strong></div>
     <div class="app-meta">
-      <span id="appVersion" class="version">v2.5</span>
+      <span id="appVersion" class="version">v2.6</span>
       <span id="status" class="offline-status">Offline-klar</span>
     </div>
   </header>
@@ -37,18 +37,19 @@
           </div>
 
           <div class="mobile-category" aria-label="Vælg kontanttype">
-            <button class="category selected" type="button" data-cash="coin" aria-pressed="true">Mønter <span id="coinsSwitchTotal">0,00 kr.</span></button>
-            <button class="category" type="button" data-cash="note" aria-pressed="false">Sedler <span id="notesSwitchTotal">0,00 kr.</span></button>
+            <button class="category" type="button" data-cash="coin" aria-pressed="false">Mønter <span id="coinsSwitchTotal">0,00 kr.</span></button>
+            <button class="category selected" type="button" data-cash="note" aria-pressed="true">Sedler <span id="notesSwitchTotal">0,00 kr.</span></button>
           </div>
+
+          <div class="column-heads" aria-hidden="true"><span>Valør</span><span>Antal</span><span>Beløb</span></div>
+          <section class="denom-group" id="notesGroup" aria-label="Sedler">
+            <h2>Sedler</h2>
+            <div id="notes" class="denom-list"></div>
+          </section>
 
           <section class="denom-group" id="coinsGroup" aria-label="Mønter">
             <h2>Mønter</h2>
             <div id="coins" class="denom-list"></div>
-          </section>
-
-          <section class="denom-group" id="notesGroup" aria-label="Sedler">
-            <h2>Sedler</h2>
-            <div id="notes" class="denom-list"></div>
           </section>
         </div>
 
