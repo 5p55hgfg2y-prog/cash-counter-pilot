@@ -1,22 +1,22 @@
-const VERSION = 'v2.5';
+const VERSION = 'v2.6';
 const STORAGE_KEY = 'cash-counter-v2_2';
 const DENOMS = [
-  { id:'0.5', ore:50, kind:'coin', label:'50 øre', badge:'coin05' },
-  { id:'1', ore:100, kind:'coin', label:'1', badge:'coin1' },
-  { id:'2', ore:200, kind:'coin', label:'2', badge:'coin2' },
-  { id:'5', ore:500, kind:'coin', label:'5', badge:'coin5' },
-  { id:'10', ore:1000, kind:'coin', label:'10', badge:'coin10' },
-  { id:'20', ore:2000, kind:'coin', label:'20', badge:'coin20' },
-  { id:'50', ore:5000, kind:'note', label:'50', badge:'note50' },
-  { id:'100', ore:10000, kind:'note', label:'100', badge:'note100' },
+  { id:'500', ore:50000, kind:'note', label:'500', badge:'note500' },
   { id:'200', ore:20000, kind:'note', label:'200', badge:'note200' },
-  { id:'500', ore:50000, kind:'note', label:'500', badge:'note500' }
+  { id:'100', ore:10000, kind:'note', label:'100', badge:'note100' },
+  { id:'50', ore:5000, kind:'note', label:'50', badge:'note50' },
+  { id:'20', ore:2000, kind:'coin', label:'20', badge:'coin20' },
+  { id:'10', ore:1000, kind:'coin', label:'10', badge:'coin10' },
+  { id:'5', ore:500, kind:'coin', label:'5', badge:'coin5' },
+  { id:'2', ore:200, kind:'coin', label:'2', badge:'coin2' },
+  { id:'1', ore:100, kind:'coin', label:'1', badge:'coin1' },
+  { id:'0.5', ore:50, kind:'coin', label:'50 øre', badge:'coin05' }
 ];
 
 const state = {
   counts: {},
   selected: DENOMS[0].id,
-  mobileView: 'coin'
+  mobileView: 'note'
 };
 
 const $ = id => document.getElementById(id);
@@ -87,6 +87,12 @@ function buildRow(denom) {
   input.pattern = '[0-9]*';
   input.value = String(countFor(denom.id));
   input.setAttribute('aria-label', `Antal ${denom.label}`);
+  // Tab/Shift+Tab should always move between quantity inputs, skipping +/- and keypad.
+  input.addEventListener('keydown', event => {
+    if (event.key !== 'Tab') return;
+    event.preventDefault();
+    focusAdjacentDenomination(event.shiftKey ? -1 : 1);
+  });
   input.addEventListener('focus', () => { state.selected = denom.id; refreshSelection(); save(); });
   input.addEventListener('input', e => {
     state.selected = denom.id;
@@ -158,15 +164,26 @@ function afterChange(showSaved = false) {
   if (showSaved) notify('Opdateret');
 }
 
-function cycleNext() {
-  const visible = DENOMS.filter(d => window.innerWidth > 700 || d.kind === state.mobileView);
-  const idx = visible.findIndex(d => d.id === state.selected);
-  const next = visible[(idx + 1 + visible.length) % visible.length];
+function focusAdjacentDenomination(direction = 1) {
+  const index = DENOMS.findIndex(d => d.id === state.selected);
+  const next = DENOMS[(index + direction + DENOMS.length) % DENOMS.length];
+  // Keep the same order on iPad and iPhone, even when iPhone uses category tabs.
+  if (window.innerWidth <= 700 && next.kind !== state.mobileView) {
+    setMobileView(next.kind);
+  }
   state.selected = next.id;
   save();
   refreshSelection();
-  const row = document.querySelector(`.row[data-id="${next.id}"] .qty`);
-  if (row) row.focus();
+  const input = document.querySelector(`.row[data-id="${next.id}"] .qty`);
+  if (input) {
+    input.focus();
+    input.select();
+    input.scrollIntoView({ block: 'nearest' });
+  }
+}
+
+function cycleNext() {
+  focusAdjacentDenomination(1);
 }
 
 function keypadPress(key) {

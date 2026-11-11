@@ -1,27 +1,18 @@
-# Cash Counter PWA v2.5 — pilot
+# Cash Counter PWA v2.6 – Pilot
 
-## Förändringar
-- Den svarta bekräftelserutan efter **Start forfra** visas kort och döljs sedan helt (`hidden`), utan att lämna en synlig kant längst ned på iPad.
-- Innehåller v2.3:s automatiska uppdateringskontroll: vid start, när appen får fokus och var 30:e minut online. Nästa service worker väntar på **Opdatér nu**.
-- Samma danska valörer och kompakta iPad-layout som i v2.2. Versionsnummer `v2.5` och offlineindikator finns kvar.
-- Samma `localStorage`-nyckel `cash-counter-v2_2` så befintliga provantal kan finnas kvar.
+## Ändringar jämfört med v2.5
+- Sedlar först, fallande ordning: 500, 200, 100, 50 kr.
+- Mynt därefter, fallande ordning: 20, 10, 5, 2, 1 kr och 50 øre.
+- Kolumnrubriker: Valør / Antal / Beløb.
+- Tab i valfritt Antal-fält flyttar till nästa Antal i räkningsordningen (Shift+Tab bakåt). Næste använder samma sekvens. På iPhone byts valörkategori automatiskt.
+- Samma datalagringsnyckel `cash-counter-v2_2` och tidigare sparade antal ska behållas.
+- Version v2.6; service worker cache `cash-counter-2-6`.
+- Alla tidigare funktioner som offline, snabbtrycksskydd och uppdateringsnotiser kvar.
 
-## Publicering
-1. Skapa branch `pilot-v2-5` från `main`.
-2. Ladda upp de **nio filerna inuti ZIP-filen** direkt i repositoryts rot.
-3. Commit och Pull Request till `main`, kontrollera ändringarna och mergea.
-4. GitHub Pages ska därefter visa `v2.5`. Ändra inte Web Clip-URL i Intune.
+## Pilot och test
+1. Skapa branch `pilot-v2-6` från `main` i GitHub.
+2. Ladda upp ZIP-filens nio uppackade filer i repositoryts rot.
+3. Commit, PR och Squash and merge till main.
+4. Verifiera v2.6 på pilot-iPad: valörordning, totalsummor, Tab/Shift+Tab med externt tangentbord, Næste, plus/minus, offline och uppdateringsflöde.
 
-## Verifiera på iPad
-- Öppna `v2.5`, testa valörer och totaler.
-- Tryck **Start forfra**, godkänn och kontrollera att notisen försvinner helt efter cirka två sekunder, även efter att du scrollar.
-- Kontrollera befintliga testantal, offline och återstart.
-- Uppdateringsnotisen kan testas fullt ut när en **senare** version publiceras (v2.5 innehåller nu väntande-worker-flödet).
-
-**Endast pilot med testbelopp.** Webbappen är inte integrerad med POS och saknar central datalagring.
-
-## v2.5 - förhindra dubbeltryckszoom
-- `touch-action: manipulation` på touchytor och valörrader förhindrar dubbeltryckszoom i moderna Safari/iPadOS utan att stänga av pinch-zoom.
-- `user-select: none` begränsas till knappar/tangentbord så antal-fälten fortfarande kan markeras och redigeras.
-- Kontrollera på fysisk iPad: tryck 5–10 gånger snabbt på `+`, `−` och det numeriska tangentbordet. Appen ska inte zooma och varje tryck ska räknas exakt en gång.
-- Uppdateringsflödet från v2.4 finns kvar; v2.5 är en bra testrelease för att verifiera uppdateringsmeddelandet på v2.4.
+Ingen POS-integration; använd endast testbelopp i GitHub Pages-piloten.
