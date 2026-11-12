@@ -39,8 +39,8 @@ p{margin:0;color:var(--muted)}
 .row.active{border-color:#8bc9d4;background:#f3fbfc;box-shadow:inset 0 0 0 1px #c6e7ed}
 .denom-label{display:flex;align-items:center;gap:10px;font-weight:700}
 .badge{min-width:52px;height:34px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;padding:0 12px;color:#fff;font-weight:700}
-.badge.coin1{background:#c08c68}.badge.coin2{background:#b57d5e}.badge.coin5{background:#ceb16d;color:#47391a}.badge.coin10{background:#bea15e;color:#453611}
-.badge.note20{background:#cba6df}.badge.note50{background:#daa25d}.badge.note100{background:#9fc0e6}.badge.note200{background:#9fc59a}.badge.note500{background:#d6878d}.badge.note1000{background:#b8b0aa}
+.badge.coin1{background:#A86A4C;color:#fff}.badge.coin2{background:#B67B5B;color:#fff}.badge.coin5{background:#B8BDC5;color:#24313a}.badge.coin10{background:#DDC482;color:#4b3c13}
+.badge.note50{background:#AD8BAE;color:#fff}.badge.note100{background:#D99B62;color:#3d2511}.badge.note200{background:#8FA878;color:#20321b}.badge.note500{background:#6995BF;color:#fff}
 .controls{display:flex;align-items:center;gap:10px;justify-content:center}
 .mini{width:36px;height:36px;border:0;background:transparent;color:var(--ink);font-size:1.6rem;line-height:1;cursor:pointer;border-radius:10px}
 .mini:hover,.mini:focus-visible{background:#eef4f6}
@@ -142,7 +142,7 @@ p{margin:0;color:var(--muted)}
   .keypad button, .next { min-height: 44px; }
 }
 
-.badge.coin05{background:#b78d73;color:#fff}.badge.coin20{background:#bcac73;color:#463916}
+.badge.coin05{background:#C5926E;color:#fff}.badge.coin20{background:#C5A04F;color:#463916}
 
 /* New version notice: stays outside the scrollable denomination panel. */
 .update-banner[hidden]{display:none!important}
@@ -194,3 +194,6 @@ button {
 @media(min-width:900px) and (orientation:landscape){
   .column-heads{grid-template-columns:68px minmax(0,1fr) 95px;gap:6px;padding:1px 8px 4px;font-size:.69rem}
 }
+
+
+/* v2.8: Danish pilot color refinement inspired by DKK notes and coins. */

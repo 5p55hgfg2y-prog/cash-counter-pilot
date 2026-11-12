@@ -22,3 +22,9 @@ Ingen POS-integration; använd endast testbelopp i GitHub Pages-piloten.
 - Antalsfelter er skrivebeskyttede og bruger kun appens numeriske tastatur ved berøring.
 - Hardwaretastatur: 0-9, Backspace, Delete/C, Tab/Shift+Tab, Enter og piletaster.
 - Cache version `cash-counter-2-7` for opdatering af installerede PWA-enheder.
+
+
+## v2.8
+- Updated denomination colors based on Danish pilot feedback.
+- Improved visual separation between 20, 10 and 5 kr.
+- 500/200/100/50 notes now follow DKK-inspired colors more closely.
